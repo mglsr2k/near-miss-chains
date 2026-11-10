@@ -1,0 +1,17 @@
+[project]
+name = "near-miss-chains"
+version = "0.1.0"
+description = "Deep research over NASA ASRS near-miss reports and NTSB accidents: which chains of small errors recur, and what broke the chain in the near misses"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "openai-agents[litellm]>=0.22",
+    "google-cloud-aiplatform>=1.40.0",
+    "duckdb>=1.3",
+    "python-dotenv>=1.0",
+]
+
+[dependency-groups]
+# Only for the offline build (uv run --group build build_data.py). Also needs mdbtools for mdb-export.
+build = ["pyarrow>=15"]

@@ -1,0 +1,9 @@
+# Virtual environment. uv recreates it from pyproject.toml + uv.lock.
+.venv/
+__pycache__/
+*.py[cod]
+# Local secrets. Commit .env.example instead, never .env.
+.env
+.DS_Store
+# Raw downloads (ASRS exports, NTSB avall.mdb): build_data.py turns them into data/*.parquet
+raw/

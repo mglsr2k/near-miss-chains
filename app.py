@@ -99,10 +99,9 @@ def _summarize(name: str, text: str) -> str:
         return ""
     if "error" in d:
         return "error: " + d["error"][:120]
-    if "matching_reports" in d:
-        return f"{d['matching_reports']} matching near misses, showing {d['showing']}"
-    if "matching_events" in d:
-        return f"{d['matching_events']} matching NTSB events, showing {d['showing']}"
+    if "keyword_hits" in d:
+        kind = "near misses" if d["source"].startswith("ASRS") else "NTSB events"
+        return f"{d['showing']} example {kind} ({d['keyword_hits']} keyword hits)"
     if "chains" in d:
         return f"{len(d['chains'])} chains in {d['subset_size']} reports"
     if "asrs_near_misses" in d:
@@ -283,6 +282,11 @@ EVIDENCE_RULES = """\
 - Numbers: copy them exactly from tool results, and always say what they cover, using the result's
   "scope" (e.g. "39 of 58 ASRS near misses, all types of flying"). Never compute rates, and never
   divide near-miss counts by accident counts.
+- Totals come only from count_by, factor_chains or compare_chain. Search results are examples:
+  their keyword_hits depends on your keywords and is never the size of a group. A count from a
+  narrower filter (e.g. phase=taxi) describes only that slice: never write "all" or "in the
+  database" about it.
+- Copy each number next to its own label. "13 by ATC and 7 by automation", never "each 13".
 - Chains vs single factors: a factor_chains count is the number of reports with EVERY factor in
   that chain. Never present it as how often one factor appears; use count_by field=factor for that.
   Before writing "X appears in N of M", check N came from a single-factor count.

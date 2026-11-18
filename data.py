@@ -138,7 +138,8 @@ def search_near_misses(query: str = "", factors=None, event=None, phase=None, op
         "reporter": r[5], "synopsis": r[6], "excerpt": _snippet(r[7], terms),
         "detected_by": r[8], "result": r[9], "factors": sorted(r[10] or []), "events": sorted(r[11] or []),
     } for r in rows]
-    return {"source": "ASRS near-miss reports", "matching_reports": rows[0][-1] if rows else 0,
+    return {"source": "ASRS near-miss reports", "scope": _scope("asrs", operation, phase),
+            "keyword_hits": rows[0][-1] if rows else 0, "note": "These are EXAMPLES. keyword_hits counts only reports that match your keywords AND filters; it is not the size of the group. For how many reports a group has, use count_by, factor_chains or compare_chain.",
             "showing": len(results), "results": results}
 
 
@@ -162,7 +163,8 @@ def search_accidents(query: str = "", factors=None, event=None, phase=None, oper
         "excerpt": _snippet(r[10], terms, 240) if terms else "",
         "factors": sorted(r[11] or []), "events": sorted(r[12] or []),
     } for r in rows]
-    return {"source": "NTSB accident/incident database", "matching_events": rows[0][-1] if rows else 0,
+    return {"source": "NTSB accident/incident database", "scope": _scope("ntsb", operation, phase),
+            "keyword_hits": rows[0][-1] if rows else 0, "note": "These are EXAMPLES. keyword_hits counts only reports that match your keywords AND filters; it is not the size of the group. For how many reports a group has, use count_by, factor_chains or compare_chain.",
             "showing": len(results), "results": results}
 
 
@@ -337,6 +339,7 @@ def count_by(source: str, field: str, factors=None, event=None, phase=None, oper
     return {"source": source, "scope": _scope(source, operation, phase), "field": field,
             "filters": {"factors": factors or [], "event": event},
             "reports_in_subset": total,
+            "how_to_read": f"Each count is how many of the {total} reports in this subset have that value.",
             "counts": [{"value": v, "reports": c} for v, c in rows],
             "note": ("A report can count under several values of a multi-valued field." if field in (
                 "factor", "event", "detector", "result") else

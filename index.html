@@ -38,8 +38,12 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { background: var(--paper); }
 body { font: 15px/1.5 var(--ui); color: var(--ink); background: var(--paper); min-height: 100vh; }
-html.ctx-off body { margin-right: 0 !important; }
 html.ctx-off #context-panel { display: none; }
+/* The prompts panel opens over the page instead of squeezing it */
+html body { margin-right: 0 !important; }
+#context-panel { position: fixed !important; top: 58px !important; bottom: 0 !important; right: 0; height: auto !important; width: min(94vw, var(--context-width)) !important; z-index: 45; box-shadow: -14px 0 40px rgba(19, 32, 47, 0.25); }
+#ctxClose { display: none; position: fixed; right: 18px; bottom: 18px; z-index: 46; border: 0; background: var(--ink); color: #fff; padding: 10px 16px; font-weight: 700; box-shadow: 0 4px 16px rgba(19, 32, 47, 0.3); }
+html:not(.ctx-off) #ctxClose { display: block; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 button { font: inherit; color: inherit; cursor: pointer; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -390,6 +394,7 @@ nav.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: 
     <div id="drawerBody"></div>
 </aside>
 <div id="tip" role="tooltip"></div>
+<button type="button" id="ctxClose">Close prompts</button>
 
 <script src="/context-panel.js"></script>
 <script>
@@ -427,11 +432,13 @@ fetch("/info").then((r) => r.json()).then((d) => {
 
 /* ---------- Context panel (the starter's timeline), off by default ---------- */
 document.documentElement.classList.add("ctx-off");
-$("ctxToggle").addEventListener("click", () => {
-    const off = document.documentElement.classList.toggle("ctx-off");
-    $("ctxToggle").setAttribute("aria-pressed", String(!off));
-    $("ctxToggle").textContent = off ? "Show each agent’s prompts" : "Hide prompts";
-});
+function setPrompts(show) {
+    document.documentElement.classList.toggle("ctx-off", !show);
+    $("ctxToggle").setAttribute("aria-pressed", String(show));
+    $("ctxToggle").textContent = show ? "Hide prompts" : "Show each agent’s prompts";
+}
+$("ctxToggle").addEventListener("click", () => setPrompts(document.documentElement.classList.contains("ctx-off")));
+$("ctxClose").addEventListener("click", () => setPrompts(false));
 
 /* ---------- The scope ---------- */
 const NS = "http://www.w3.org/2000/svg";
@@ -716,7 +723,7 @@ function fail(box, msg) {
 /* ---------- Report drawer ---------- */
 document.addEventListener("click", (e) => { const c = e.target.closest(".cite"); if (c) openRecord(c.dataset.id); });
 $("drawerClose").addEventListener("click", closeDrawer);
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeDrawer(); setPrompts(false); } });
 function closeDrawer() { $("drawer").classList.remove("open"); $("drawer").setAttribute("aria-hidden", "true"); }
 async function openRecord(id) {
     const body = $("drawerBody");

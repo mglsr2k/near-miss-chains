@@ -44,7 +44,7 @@ SETTINGS = ModelSettings(extra_args={"vertex_location": os.environ.get("VERTEX_L
 
 MAX_RESEARCHERS = 8  # in all, across every round. Prompts ask for restraint; code enforces it.
 MAX_ROUNDS = 3  # the first fan-out plus at most two follow-ups for gaps
-LEAD_SECONDS = 200  # graders wait 5 minutes: past this, the Writer works with what's been found
+LEAD_SECONDS = 150  # Cloud Run request timeout is 240 s: past this, the Writer works with what's been found
 TOOL_OUTPUT_CHARS = 6000  # how much of each tool result /chat returns in tool_calls
 
 

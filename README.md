@@ -162,7 +162,7 @@ uv run python tests/test_flow.py    # tests the orchestration with a scripted mo
 The app runs on Google Cloud Run, deployed continuously from this repository: every push to `main` builds and deploys a new version. The data ships with the code (no file is over 100 MB).
 
 - **Build:** Google Cloud buildpacks, started with `uvicorn app:app --host 0.0.0.0 --port $PORT`.
-- **Access:** public, no sign-in.
+- **Access:** restricted to Columbia accounts with Identity-Aware Proxy: sign in with a Columbia Google account to open the app.
 - **Request timeout:** 240 s. The Lead stops at 150 s, and the Writer finishes well within the limit; typical runs take 40–80 s.
 - **Environment variables:** `VERTEXAI_PROJECT` (the Google Cloud project ID) and `VERTEXAI_LOCATION=global`.
 - **Permissions:** the Cloud Run service account has the **Vertex AI User** role, for Gemini.
